@@ -1,0 +1,5 @@
+/vgg19_weight
+/dataset
+/.idea
+/logs
+*.npy

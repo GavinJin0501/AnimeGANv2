@@ -1,11 +1,13 @@
 import os
-import tensorflow as tf
-import cv2,random
+
+import cv2
 import numpy as np
+import tensorflow as tf
+
 
 class ImageGenerator(object):
 
-    def __init__(self, image_dir,size, batch_size, num_cpus = 16):
+    def __init__(self, image_dir, size, batch_size, num_cpus=16):
         self.paths = self.get_image_paths_train(image_dir)
         self.num_images = len(self.paths)
         self.num_cpus = num_cpus
@@ -36,9 +38,9 @@ class ImageGenerator(object):
             image1 = cv2.cvtColor(image1, cv2.COLOR_BGR2RGB)
 
             # gray image2
-            image2 = cv2.imread(img_path1.decode(),cv2.IMREAD_GRAYSCALE).astype(np.float32)
-            image2 = np.asarray([image2,image2,image2])
-            image2= np.transpose(image2,(1,2,0))
+            image2 = cv2.imread(img_path1.decode(), cv2.IMREAD_GRAYSCALE).astype(np.float32)
+            image2 = np.asarray([image2, image2, image2])
+            image2 = np.transpose(image2, (1, 2, 0))
 
         else:
             # color image1
@@ -49,11 +51,11 @@ class ImageGenerator(object):
 
         return image1, image2
 
-    def load_image(self, img1 ):
+    def load_image(self, img1):
         image1, image2 = self.read_image(img1)
-        processing_image1 = image1/ 127.5 - 1.0
-        processing_image2 = image2/ 127.5 - 1.0
-        return (processing_image1,processing_image2)
+        processing_image1 = image1 / 127.5 - 1.0
+        processing_image2 = image2 / 127.5 - 1.0
+        return (processing_image1, processing_image2)
 
     def load_images(self):
 
@@ -67,11 +69,11 @@ class ImageGenerator(object):
 
         # Map path to image 
         dataset = dataset.map(lambda img: tf.py_func(
-            self.load_image, [img], [tf.float32,tf.float32]),
+            self.load_image, [img], [tf.float32, tf.float32]),
                               self.num_cpus)
 
         dataset = dataset.batch(self.batch_size)
 
-        img1,img2 = dataset.make_one_shot_iterator().get_next()
+        img1, img2 = dataset.make_one_shot_iterator().get_next()
 
-        return img1,img2
+        return img1, img2
